@@ -19,10 +19,24 @@ private var rainDropSpawnRate : TimeInterval = 0.5
 private let random = GKARC4RandomSource()
 
 
+// this represents the slowest speed at which our shapes will travel
+let TickLengthLevelOne = TimeInterval(600) // ms
+// == every 6/10ths of a second, our shape should descend
+
+
 class GameScene: SKScene, SKPhysicsContactDelegate {
-  
+    
+    // closure!!
+    var tick : (() -> ())?
+    
+    // GameScene current tick length
+    var tickLengthMillis = TickLengthLevelOne
+    var lastTick : NSDate?
+    
+    
     var isFingerOnLeft = false
     var isFingerOnRight = false
+    
     
     var firstBlock : BlockProperties = BlockProperties(inputShape: "square")
     
@@ -66,6 +80,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
     }
     
+    
     func spawnPolygon() {
         let rainDrop = SKShapeNode(rectOf: CGSize(width: 20, height: 20))
         rainDrop.position = CGPoint(x: size.width / 2, y:  size.height / 2)
@@ -77,6 +92,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         addChild(rainDrop)
     }
+    
     
     // MARK: - touch handler
     
@@ -105,12 +121,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
         if isFingerOnRight {
             let paddle = childNode(withName: "paddle") as! SKSpriteNode
-            paddle.physicsBody!.applyImpulse(CGVector(dx: 4, dy: 0))
+            paddle.physicsBody!.velocity = CGVector(dx: 0, dy: 0)
+            paddle.physicsBody!.applyImpulse(CGVector(dx: 7, dy: 0))
             print("RIGHT!!!!")
         }
         if isFingerOnLeft {
-            let paddle = childNode(withName: "paddle") as! SKSpriteNode 
-            paddle.physicsBody!.applyImpulse(CGVector(dx: -4, dy: 0))
+            let paddle = childNode(withName: "paddle") as! SKSpriteNode
+            paddle.physicsBody!.velocity = CGVector(dx: 0, dy: 0)
+            paddle.physicsBody!.applyImpulse(CGVector(dx: -7, dy: 0))
             print("LEFT!!!!!!")
         }
     }
@@ -152,7 +170,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         print("HAHHAHAHAHA")
         if firstBody.categoryBitMask == firstBlock.BlockCategory && secondBody.categoryBitMask == BottomCategory {
             print("Hit bottom. First contact has been made.")
-
         }
         
         if firstBody.categoryBitMask == firstBlock.BlockCategory && secondBody.categoryBitMask == PaddleCategory {
@@ -163,7 +180,38 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             //  ball2.physicsBody?.affectedByGravity = true
             
         }
+    }
+    
+    
+    // MARK: - handling time
+    
+    override func update(_ currentTime: CFTimeInterval) {
+        /* Called before rendering each frame */
         
+        // GUARD: if let lastTick != lastTick, the else block is executed
+        guard let lastTick = lastTick else {
+            // game is in a paused state == not reporting elapsed ticks
+            return
+        }
+        
+        let timePassed = lastTick.timeIntervalSinceNow * -1000.0 // *-1000 so the result is positive
+        
+        
+        // checks if the time passed is bigger than the time period we established at the beginning
+        if timePassed > tickLengthMillis {
+            
+            // if it is, we report a tick!
+            self.lastTick = NSDate()
+            tick?()
+        }
+    }
+    
+    func startTicking() {
+        lastTick = NSDate()
+    }
+    
+    func stopTicking() {
+        lastTick = nil
     }
     
 }
