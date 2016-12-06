@@ -1,17 +1,15 @@
 import SpriteKit
 import GameplayKit
 
-let BallCategoryName = "ball"
-//let Ball2CategoryName = "ball2"
-//let Ball3CategoryName = "ball3"
+//let SquareCategoryName = "square"
 let PaddleCategoryName = "paddle"
-let BlockCategoryName = "block"
+//let BlockCategoryName = "block"
 let GameMessageName = "gameMessage"
 let LeftCategoryName = "left"
 let RightCategoryName = "right"
-let BallCategory   : UInt32 = 0x1 << 0
+//let SquareCategory : UInt32 = 0x1 << 0
 let BottomCategory : UInt32 = 0x1 << 1
-let BlockCategory  : UInt32 = 0x1 << 2
+//let BlockCategory  : UInt32 = 0x1 << 2
 let PaddleCategory : UInt32 = 0x1 << 3
 let BorderCategory : UInt32 = 0x1 << 4
 
@@ -25,6 +23,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
   
     var isFingerOnLeft = false
     var isFingerOnRight = false
+    
+    var firstBlock : BlockProperties = BlockProperties(inputShape: "square")
+    
     //private var lastUpdateTime : TimeInterval = 0
     
 //    override func sceneDidLoad() {
@@ -38,7 +39,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         borderBody.friction = 0
         self.physicsBody = borderBody
         
-        
         // creates an edge-based body that spans the bottom of the screen
         let bottomRect = CGRect(x: frame.origin.x, y: frame.origin.y, width: frame.size.width, height: 1)
         let bottom = SKNode()
@@ -46,33 +46,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         addChild(bottom)
 
         
-        // removes all gravity from the scene
+        // removes gravity from the scene, applying a -2j force instead
         physicsWorld.gravity = CGVector(dx: 0.0, dy: -2.0)
         
         physicsWorld.contactDelegate = self
 
-        let ball = childNode(withName: BallCategoryName) as! SKSpriteNode
-        
-        //let ball2 = childNode(withName: Ball2CategoryName) as! SKSpriteNode
-        //let ball3 = childNode(withName: Ball3CategoryName) as! SKSpriteNode
-        let left = childNode(withName: LeftCategoryName) as! SKSpriteNode
-        let right = childNode(withName: RightCategoryName) as! SKSpriteNode
+        let square = childNode(withName: firstBlock.BlockCategoryName) as! SKSpriteNode
         let paddle = childNode(withName: PaddleCategoryName) as! SKSpriteNode
-        
-//        ball2.alpha = 1
-//        ball3.alpha = 1
         
         
         bottom.physicsBody!.categoryBitMask = BottomCategory
-        ball.physicsBody!.categoryBitMask = BallCategory
-        //ball2.physicsBody!.categoryBitMask = BallCategory
-        //ball3.physicsBody!.categoryBitMask = BallCategory
+        square.physicsBody!.categoryBitMask = firstBlock.BlockCategory
         paddle.physicsBody!.categoryBitMask = PaddleCategory
         borderBody.categoryBitMask = BorderCategory
         
-        ball.physicsBody!.contactTestBitMask = BottomCategory
+        square.physicsBody!.contactTestBitMask = BottomCategory
         
-        ball.physicsBody!.contactTestBitMask = PaddleCategory
+        square.physicsBody!.contactTestBitMask = PaddleCategory
 
     }
     
@@ -119,7 +109,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             print("RIGHT!!!!")
         }
         if isFingerOnLeft {
-            let paddle = childNode(withName: "paddle") as! SKSpriteNode
+            let paddle = childNode(withName: "paddle") as! SKSpriteNode 
             paddle.physicsBody!.applyImpulse(CGVector(dx: -4, dy: 0))
             print("LEFT!!!!!!")
         }
@@ -160,12 +150,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         print("HAHHAHAHAHA")
-        if firstBody.categoryBitMask == BallCategory && secondBody.categoryBitMask == BottomCategory {
+        if firstBody.categoryBitMask == firstBlock.BlockCategory && secondBody.categoryBitMask == BottomCategory {
             print("Hit bottom. First contact has been made.")
 
         }
         
-        if firstBody.categoryBitMask == BallCategory && secondBody.categoryBitMask == PaddleCategory {
+        if firstBody.categoryBitMask == firstBlock.BlockCategory && secondBody.categoryBitMask == PaddleCategory {
             
             //let ball2 = childNode(withName: Ball2CategoryName) as! SKSpriteNode
             print("OIOIOIOIOIOIOI")

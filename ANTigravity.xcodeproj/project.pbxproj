@@ -25,6 +25,7 @@
 		E10018421DF6FD4A00231774 /* paddleBlip.wav in Resources */ = {isa = PBXBuildFile; fileRef = E10018301DF6FD4A00231774 /* paddleBlip.wav */; };
 		E10018431DF6FD4A00231774 /* pongblip.wav in Resources */ = {isa = PBXBuildFile; fileRef = E10018311DF6FD4A00231774 /* pongblip.wav */; };
 		E10018441DF6FD4A00231774 /* WaitingForTap.swift in Sources */ = {isa = PBXBuildFile; fileRef = E10018321DF6FD4A00231774 /* WaitingForTap.swift */; };
+		E10018461DF70BF900231774 /* BlockProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = E10018451DF70BF900231774 /* BlockProperties.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -46,6 +47,7 @@
 		E10018301DF6FD4A00231774 /* paddleBlip.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = paddleBlip.wav; sourceTree = "<group>"; };
 		E10018311DF6FD4A00231774 /* pongblip.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = pongblip.wav; sourceTree = "<group>"; };
 		E10018321DF6FD4A00231774 /* WaitingForTap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = WaitingForTap.swift; path = ANTigravity/WaitingForTap.swift; sourceTree = "<group>"; };
+		E10018451DF70BF900231774 /* BlockProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlockProperties.swift; sourceTree = "<group>"; };
 		F577B38B1CB81F840005E827 /* ANTigravity.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ANTigravity.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -97,18 +99,19 @@
 			isa = PBXGroup;
 			children = (
 				E100181C1DF6FD4A00231774 /* AppDelegate.swift */,
-				E100181D1DF6FD4A00231774 /* Assets.xcassets */,
-				E100181E1DF6FD4A00231774 /* Base.lproj */,
 				E10018231DF6FD4A00231774 /* GameOver.swift */,
 				E10018241DF6FD4A00231774 /* GameScene.sks */,
 				E10018251DF6FD4A00231774 /* GameScene.swift */,
 				E10018261DF6FD4A00231774 /* GameViewController.swift */,
+				E10018451DF70BF900231774 /* BlockProperties.swift */,
+				E10018321DF6FD4A00231774 /* WaitingForTap.swift */,
 				E10018271DF6FD4A00231774 /* Info.plist */,
 				E10018281DF6FD4A00231774 /* Particles */,
 				E100182B1DF6FD4A00231774 /* Playing.swift */,
 				E100182C1DF6FD4A00231774 /* Sounds */,
-				E10018321DF6FD4A00231774 /* WaitingForTap.swift */,
+				E100181E1DF6FD4A00231774 /* Base.lproj */,
 				F577B38C1CB81F840005E827 /* Products */,
+				E100181D1DF6FD4A00231774 /* Assets.xcassets */,
 			);
 			sourceTree = "<group>";
 		};
@@ -205,6 +208,7 @@
 				E100183A1DF6FD4A00231774 /* GameViewController.swift in Sources */,
 				E10018441DF6FD4A00231774 /* WaitingForTap.swift in Sources */,
 				E100183E1DF6FD4A00231774 /* Playing.swift in Sources */,
+				E10018461DF70BF900231774 /* BlockProperties.swift in Sources */,
 				E10018391DF6FD4A00231774 /* GameScene.swift in Sources */,
 				E10018331DF6FD4A00231774 /* AppDelegate.swift in Sources */,
 				E10018371DF6FD4A00231774 /* GameOver.swift in Sources */,
