@@ -213,5 +213,4 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func stopTicking() {
         lastTick = nil
     }
-    
 }
