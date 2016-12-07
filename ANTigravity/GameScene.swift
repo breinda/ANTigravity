@@ -6,7 +6,7 @@ let GameMessageName = "gameMessage"
 let LeftCategoryName = "left"
 let RightCategoryName = "right"
 let BlockCategoryName = "block"
-let WorldCategoryName = "block"
+let WorldCategoryName = "world"
 
 let BottomCategory  : UInt32 = 0x1 << 0
 let PaddleCategory  : UInt32 = 0x1 << 1
@@ -150,17 +150,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func didBegin(_ contact: SKPhysicsContact) {
         
-//        var firstBody: SKPhysicsBody
-//        var secondBody: SKPhysicsBody
-//
-//        if contact.bodyA.categoryBitMask < contact.bodyB.categoryBitMask {
-//            firstBody = contact.bodyA
-//            secondBody = contact.bodyB
-//        } else {
-//            firstBody = contact.bodyB
-//            secondBody = contact.bodyA
-//        }
-        
         print("COLLISION")
         
         if (contact.bodyA.categoryBitMask == BlockCategory) {
@@ -170,18 +159,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             contact.bodyB.node?.physicsBody?.collisionBitMask = 0
             contact.bodyB.node?.physicsBody?.categoryBitMask = 0
         }
-//        if firstBody.categoryBitMask == firstBlock.BlockCategory && secondBody.categoryBitMask == BottomCategory {
-//            print("Hit bottom. First contact has been made.")
-//        }
-//        
-//        if firstBody.categoryBitMask == firstBlock.BlockCategory && secondBody.categoryBitMask == PaddleCategory {
-//            
-//            //let ball2 = childNode(withName: Ball2CategoryName) as! SKSpriteNode
-//            print("OIOIOIOIOIOIOI")
-//            //ball2.alpha = 1
-//            //  ball2.physicsBody?.affectedByGravity = true
-//            
-//        }
+        
+        // remove nodes after they hit the floor
+        if contact.bodyA.categoryBitMask == WorldCategory {
+            contact.bodyB.node?.removeFromParent()
+            contact.bodyB.node?.physicsBody = nil
+            contact.bodyB.node?.removeAllActions()
+        } else if contact.bodyB.categoryBitMask == WorldCategory {
+            contact.bodyA.node?.removeFromParent()
+            contact.bodyA.node?.physicsBody = nil
+            contact.bodyA.node?.removeAllActions()
+        }
     }
     
     
@@ -189,23 +177,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     override func update(_ currentTime: CFTimeInterval) {
         /* Called before rendering each frame */
-        
-        // GUARD: if let lastTick != lastTick, the else block is executed
-//        guard let lastTick = lastTick else {
-//            // game is in a paused state == not reporting elapsed ticks
-//            return
-//        }
-//        
-//        let timePassed = lastTick.timeIntervalSinceNow * -1000.0 // *-1000 so the result is positive
-//        
-//        
-//        // checks if the time passed is bigger than the time period we established at the beginning
-//        if timePassed > tickLengthMillis {
-//            
-//            // if it is, we report a tick!
-//            self.lastTick = NSDate()
-//            tick?()
-//        }
         
         // Initialize _lastUpdateTime if it has not already been
         if (self.lastUpdateTime == 0) {
@@ -224,15 +195,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             spawnPolygon()
         }
     }
-//    
-//    func startTicking() {
-//        lastTick = NSDate()
-//    }
-//    
-//    func stopTicking() {
-//        lastTick = nil
-//    }
-//    
+
     
     // MARK: - block randomizer
     
@@ -278,6 +241,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         block.physicsBody?.categoryBitMask = BlockCategory
         block.physicsBody?.contactTestBitMask = BottomCategory | WorldCategory
         
+        block.alpha = 1
         
         addChild(block)
         
