@@ -12,7 +12,7 @@ let BorderCategory : UInt32 = 0x1 << 2
 
 
 private var currentPolygonSpawnTime : TimeInterval = 0
-private var polygonSpawnRate : TimeInterval = 0.5
+private var polygonSpawnRate        : TimeInterval = 2.0
 private let random = GKARC4RandomSource()
 
 
@@ -242,7 +242,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             block.physicsBody = SKPhysicsBody(texture: squareTexture, size: block.size)
         }
         else if blockProperties.shape.spriteName == "line" {
-            block = SKSpriteNode(texture: squareTexture, size: CGSize(width: 100, height: 5))
+            block = SKSpriteNode(texture: squareTexture, size: CGSize(width: 70, height: 5))
             block.physicsBody = SKPhysicsBody(texture: squareTexture, size: block.size)
         }
         else {
@@ -259,6 +259,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         block.position = CGPoint(x: randomPosition, y: size.height)
         
+        block.physicsBody?.restitution = 0.2
+        block.physicsBody?.mass = 0.0005
+        block.physicsBody?.friction = 0.98
         
         
         addChild(block)
