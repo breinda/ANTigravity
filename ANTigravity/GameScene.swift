@@ -25,6 +25,11 @@ let TickLengthLevelOne = TimeInterval(600) // ms
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
+    // textures used on blocks
+    let ovalTexture = SKTexture(imageNamed: "Oval")
+    let squareTexture = SKTexture(imageNamed: "Square")
+    
+    
     // closure!!
     var tick : (() -> ())?
     
@@ -32,12 +37,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var tickLengthMillis = TickLengthLevelOne
     var lastTick : NSDate?
     
-    
     var isFingerOnLeft = false
     var isFingerOnRight = false
-    
-    
-    //var firstBlock : BlockProperties = BlockProperties(inputShape: "square")
     
     var firstBlock : BlockProperties = BlockProperties(color: BlockColor.random(), shape: BlockShape.random())
     
@@ -83,26 +84,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         block.alpha = 1
 
     }
-    
-    
-    func spawnPolygon() {
-        let rainDrop = SKShapeNode(rectOf: CGSize(width: 20, height: 20))
-        rainDrop.position = CGPoint(x: size.width / 2, y:  size.height / 2)
-        rainDrop.fillColor = SKColor.blue
-        rainDrop.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: 20, height: 20))
-        
-        let randomPosition = abs(CGFloat(random.nextInt()).truncatingRemainder(dividingBy: size.width))
-        rainDrop.position = CGPoint(x: randomPosition, y: size.height)
-        
-        addChild(rainDrop)
-    }
-    
+
     
     // MARK: - touch handler
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         let touch = touches.first
         let touchLocation = touch!.location(in: self)
+        
+        spawnPolygon()
         
         if let body = physicsWorld.body(at: touchLocation) {
             print(body.node!.name)
@@ -216,5 +206,63 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func stopTicking() {
         lastTick = nil
+    }
+    
+    
+    // MARK: - block randomizer
+    
+    func spawnPolygon() {
+        
+        let blockProperties: BlockProperties = BlockProperties(color: BlockColor.random(), shape: BlockShape.random())
+        
+        var block: SKSpriteNode
+        
+        if blockProperties.shape.spriteName == "rectangle" {
+            block = SKSpriteNode(texture: squareTexture, size: CGSize(width: 100, height: 29))
+            //block = SKShapeNode(rectOf: CGSize(width: 100, height: 29))
+            //block.fillTexture = squareTexture
+            //block.physicsBody! = SKPhysicsBody(rectangleOf: CGSize(width: 100, height: 29))
+            block.physicsBody = SKPhysicsBody(texture: squareTexture, size: block.size)
+        }
+        else if blockProperties.shape.spriteName == "oval" {
+//            block = SKShapeNode(circleOfRadius: 15)
+//            block.fillTexture = ovalTexture
+//            block.physicsBody! = SKPhysicsBody(circleOfRadius: 15)
+            
+            block = SKSpriteNode(texture: ovalTexture, size: CGSize(width: 29, height: 29))
+            block.physicsBody = SKPhysicsBody(texture: ovalTexture, size: block.size)
+        }
+        else if blockProperties.shape.spriteName == "square" {
+//            block = SKShapeNode(rectOf: CGSize(width: 29, height: 29))
+//            block.fillTexture = squareTexture
+//            block.physicsBody! = SKPhysicsBody(rectangleOf: CGSize(width: 29, height: 29))
+            
+            block = SKSpriteNode(texture: squareTexture, size: CGSize(width: 29, height: 29))
+            block.physicsBody = SKPhysicsBody(texture: squareTexture, size: block.size)
+        }
+        else if blockProperties.shape.spriteName == "line" {
+//            block = SKShapeNode(rectOf: CGSize(width: 100, height: 5))
+//            block.fillTexture = squareTexture
+//            block.physicsBody! = SKPhysicsBody(rectangleOf: CGSize(width: 100, height: 5))
+            
+            block = SKSpriteNode(texture: squareTexture, size: CGSize(width: 100, height: 5))
+            block.physicsBody = SKPhysicsBody(texture: squareTexture, size: block.size)
+        }
+        else {
+            print("ALGO ERRADO COM O TIPO DO BLOCO")
+            exit(2)
+        }
+        
+        //let block = SKShapeNode(rectOf: CGSize(width: 29, height: 29))
+        //let block = childNode(withName: firstBlock.BlockCategoryName) as! SKSpriteNode
+
+        //block.position = CGPoint(x: size.width / 2, y:  size.height / 2)
+        //block.fillColor = SKColor.blue
+        //block.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: 20, height: 20))
+        
+        let randomPosition = abs(CGFloat(random.nextInt()).truncatingRemainder(dividingBy: size.width))
+        block.position = CGPoint(x: randomPosition, y: size.height)
+        
+        addChild(block)
     }
 }
