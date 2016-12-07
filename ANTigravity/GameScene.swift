@@ -92,16 +92,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let touch = touches.first
         let touchLocation = touch!.location(in: self)
         
-        spawnPolygon()
+        // TESTING THE WATERS
+        //spawnPolygon()
         
         if let body = physicsWorld.body(at: touchLocation) {
             print(body.node!.name)
             if body.node!.name == RightCategoryName {
                 print("Began touch on paddle")
                 isFingerOnRight = true
-                
-                print("")
-                //spawnPolygon()
             }
         }
         if let body = physicsWorld.body(at: touchLocation) {
@@ -109,7 +107,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             if body.node!.name == LeftCategoryName {
                 print("Began touch on paddle")
                 isFingerOnLeft = true
-                //spawnPolygon()
             }
         }
 
@@ -219,32 +216,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         if blockProperties.shape.spriteName == "rectangle" {
             block = SKSpriteNode(texture: squareTexture, size: CGSize(width: 100, height: 29))
-            //block = SKShapeNode(rectOf: CGSize(width: 100, height: 29))
-            //block.fillTexture = squareTexture
-            //block.physicsBody! = SKPhysicsBody(rectangleOf: CGSize(width: 100, height: 29))
             block.physicsBody = SKPhysicsBody(texture: squareTexture, size: block.size)
         }
         else if blockProperties.shape.spriteName == "oval" {
-//            block = SKShapeNode(circleOfRadius: 15)
-//            block.fillTexture = ovalTexture
-//            block.physicsBody! = SKPhysicsBody(circleOfRadius: 15)
-            
             block = SKSpriteNode(texture: ovalTexture, size: CGSize(width: 29, height: 29))
             block.physicsBody = SKPhysicsBody(texture: ovalTexture, size: block.size)
         }
         else if blockProperties.shape.spriteName == "square" {
-//            block = SKShapeNode(rectOf: CGSize(width: 29, height: 29))
-//            block.fillTexture = squareTexture
-//            block.physicsBody! = SKPhysicsBody(rectangleOf: CGSize(width: 29, height: 29))
-            
             block = SKSpriteNode(texture: squareTexture, size: CGSize(width: 29, height: 29))
             block.physicsBody = SKPhysicsBody(texture: squareTexture, size: block.size)
         }
         else if blockProperties.shape.spriteName == "line" {
-//            block = SKShapeNode(rectOf: CGSize(width: 100, height: 5))
-//            block.fillTexture = squareTexture
-//            block.physicsBody! = SKPhysicsBody(rectangleOf: CGSize(width: 100, height: 5))
-            
             block = SKSpriteNode(texture: squareTexture, size: CGSize(width: 100, height: 5))
             block.physicsBody = SKPhysicsBody(texture: squareTexture, size: block.size)
         }
@@ -253,16 +235,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             exit(2)
         }
         
-        //let block = SKShapeNode(rectOf: CGSize(width: 29, height: 29))
-        //let block = childNode(withName: firstBlock.BlockCategoryName) as! SKSpriteNode
-
-        //block.position = CGPoint(x: size.width / 2, y:  size.height / 2)
-        //block.fillColor = SKColor.blue
-        //block.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: 20, height: 20))
+        var randomPosition = abs(CGFloat(random.nextInt()).truncatingRemainder(dividingBy: size.width))
         
-        let randomPosition = abs(CGFloat(random.nextInt()).truncatingRemainder(dividingBy: size.width))
+        // 87 é a largura do botao que move a plataforma
+        while (randomPosition - block.size.width / 2) < 87 || (randomPosition + block.size.width / 2) > UIScreen.main.bounds.width - 87 {
+            randomPosition = abs(CGFloat(random.nextInt()).truncatingRemainder(dividingBy: size.width))
+        }
+        
         block.position = CGPoint(x: randomPosition, y: size.height)
         
+        
+        
         addChild(block)
+        
+        block.alpha = 1
     }
 }
