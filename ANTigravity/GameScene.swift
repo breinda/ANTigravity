@@ -1,12 +1,11 @@
 import SpriteKit
 import GameplayKit
 
-//let SquareCategoryName = "square"
 let PaddleCategoryName = "paddle"
-//let BlockCategoryName = "block"
 let GameMessageName = "gameMessage"
 let LeftCategoryName = "left"
 let RightCategoryName = "right"
+
 //let SquareCategory : UInt32 = 0x1 << 0
 let BottomCategory : UInt32 = 0x1 << 1
 //let BlockCategory  : UInt32 = 0x1 << 2
@@ -38,7 +37,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var isFingerOnRight = false
     
     
-    var firstBlock : BlockProperties = BlockProperties(inputShape: "square")
+    //var firstBlock : BlockProperties = BlockProperties(inputShape: "square")
+    
+    var firstBlock : BlockProperties = BlockProperties(color: BlockColor.random(), shape: BlockShape.random())
     
     //private var lastUpdateTime : TimeInterval = 0
     
@@ -61,22 +62,25 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
         
         // removes gravity from the scene, applying a -2j force instead
-        physicsWorld.gravity = CGVector(dx: 0.0, dy: -2.0)
+        physicsWorld.gravity = CGVector(dx: 0.0, dy: -1.5)
         
         physicsWorld.contactDelegate = self
 
-        let square = childNode(withName: firstBlock.BlockCategoryName) as! SKSpriteNode
+        let block = childNode(withName: firstBlock.BlockCategoryName) as! SKSpriteNode
         let paddle = childNode(withName: PaddleCategoryName) as! SKSpriteNode
         
         
         bottom.physicsBody!.categoryBitMask = BottomCategory
-        square.physicsBody!.categoryBitMask = firstBlock.BlockCategory
+        block.physicsBody!.categoryBitMask = firstBlock.BlockCategory
         paddle.physicsBody!.categoryBitMask = PaddleCategory
         borderBody.categoryBitMask = BorderCategory
         
-        square.physicsBody!.contactTestBitMask = BottomCategory
+        block.physicsBody!.contactTestBitMask = BottomCategory
         
-        square.physicsBody!.contactTestBitMask = PaddleCategory
+        block.physicsBody!.contactTestBitMask = PaddleCategory
+        
+        block.physicsBody!.affectedByGravity = true
+        block.alpha = 1
 
     }
     
