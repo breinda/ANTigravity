@@ -1,11 +1,23 @@
 import UIKit
 import SpriteKit
 
+struct game {
+    static var IsOver : Bool = false
+}
+
 class GameViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        if game.IsOver == true {
+            goToGameScene()
+            
+            print("ENTREI")
+            
+            return
+        }
+        
         if let scene = GameScene(fileNamed:"GameScene") {
             // Configure the view.
             let skView = self.view as! SKView
@@ -19,9 +31,16 @@ class GameViewController: UIViewController {
             /* Set the scale mode to scale to fit the window */
             scene.scaleMode = .aspectFit
             
+            //game.IsOver = false
             
             skView.presentScene(scene)
         }
+        
+    }
+    
+    func goToGameScene() {
+        game.IsOver = false
+        viewDidLoad()
     }
 
     override var shouldAutorotate : Bool {

@@ -170,6 +170,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             contact.bodyA.node?.physicsBody = nil
             contact.bodyA.node?.removeAllActions()
         }
+        
+        
+        let alertView = UIAlertController(title: "BOO!",
+                                          message: "you lost :(" as String, preferredStyle:.actionSheet)
+        let okAction = UIAlertAction(title: "START OVER!", style: .default, handler: nil)
+        alertView.addAction(okAction)
+        self.view?.window?.rootViewController?.present(alertView, animated: true, completion: nil)
+        
+        game.IsOver = true
+        self.view?.window?.rootViewController?.viewDidLoad()
+        
     }
     
     
