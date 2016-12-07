@@ -6,15 +6,13 @@ let GameMessageName = "gameMessage"
 let LeftCategoryName = "left"
 let RightCategoryName = "right"
 
-//let SquareCategory : UInt32 = 0x1 << 0
-let BottomCategory : UInt32 = 0x1 << 1
-//let BlockCategory  : UInt32 = 0x1 << 2
-let PaddleCategory : UInt32 = 0x1 << 3
-let BorderCategory : UInt32 = 0x1 << 4
+let BottomCategory : UInt32 = 0x1 << 0
+let PaddleCategory : UInt32 = 0x1 << 1
+let BorderCategory : UInt32 = 0x1 << 2
 
 
-private var currentRainDropSpawnTime : TimeInterval = 0
-private var rainDropSpawnRate : TimeInterval = 0.5
+private var currentPolygonSpawnTime : TimeInterval = 0
+private var polygonSpawnRate : TimeInterval = 0.5
 private let random = GKARC4RandomSource()
 
 
@@ -40,13 +38,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var isFingerOnLeft = false
     var isFingerOnRight = false
     
-    var firstBlock : BlockProperties = BlockProperties(color: BlockColor.random(), shape: BlockShape.random())
+    //var firstBlock : BlockProperties = BlockProperties(color: BlockColor.random(), shape: BlockShape.random())
     
-    //private var lastUpdateTime : TimeInterval = 0
+    private var lastUpdateTime : TimeInterval = 0
     
-//    override func sceneDidLoad() {
-//        self.lastUpdateTime = 0
-//    }
+    override func sceneDidLoad() {
+        self.lastUpdateTime = 0
+    }
     
     override func didMove(to view: SKView) {
         super.didMove(to: view)
@@ -67,21 +65,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         physicsWorld.contactDelegate = self
 
-        let block = childNode(withName: firstBlock.BlockCategoryName) as! SKSpriteNode
+        //let block = childNode(withName: firstBlock.BlockCategoryName) as! SKSpriteNode
         let paddle = childNode(withName: PaddleCategoryName) as! SKSpriteNode
         
         
         bottom.physicsBody!.categoryBitMask = BottomCategory
-        block.physicsBody!.categoryBitMask = firstBlock.BlockCategory
+        //block.physicsBody!.categoryBitMask = firstBlock.BlockCategory
         paddle.physicsBody!.categoryBitMask = PaddleCategory
         borderBody.categoryBitMask = BorderCategory
         
-        block.physicsBody!.contactTestBitMask = BottomCategory
-        
-        block.physicsBody!.contactTestBitMask = PaddleCategory
-        
-        block.physicsBody!.affectedByGravity = true
-        block.alpha = 1
+//        block.physicsBody!.contactTestBitMask = BottomCategory
+//        
+//        block.physicsBody!.contactTestBitMask = PaddleCategory
+//        
+//        block.physicsBody!.affectedByGravity = true
+//        block.alpha = 1
 
     }
 
@@ -96,14 +94,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         //spawnPolygon()
         
         if let body = physicsWorld.body(at: touchLocation) {
-            print(body.node!.name)
+            //print(body.node!.name)
             if body.node!.name == RightCategoryName {
                 print("Began touch on paddle")
                 isFingerOnRight = true
             }
         }
         if let body = physicsWorld.body(at: touchLocation) {
-            print(body.node!.name)
+            //print(body.node!.name)
             if body.node!.name == LeftCategoryName {
                 print("Began touch on paddle")
                 isFingerOnLeft = true
@@ -159,18 +157,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         print("HAHHAHAHAHA")
-        if firstBody.categoryBitMask == firstBlock.BlockCategory && secondBody.categoryBitMask == BottomCategory {
-            print("Hit bottom. First contact has been made.")
-        }
-        
-        if firstBody.categoryBitMask == firstBlock.BlockCategory && secondBody.categoryBitMask == PaddleCategory {
-            
-            //let ball2 = childNode(withName: Ball2CategoryName) as! SKSpriteNode
-            print("OIOIOIOIOIOIOI")
-            //ball2.alpha = 1
-            //  ball2.physicsBody?.affectedByGravity = true
-            
-        }
+//        if firstBody.categoryBitMask == firstBlock.BlockCategory && secondBody.categoryBitMask == BottomCategory {
+//            print("Hit bottom. First contact has been made.")
+//        }
+//        
+//        if firstBody.categoryBitMask == firstBlock.BlockCategory && secondBody.categoryBitMask == PaddleCategory {
+//            
+//            //let ball2 = childNode(withName: Ball2CategoryName) as! SKSpriteNode
+//            print("OIOIOIOIOIOIOI")
+//            //ball2.alpha = 1
+//            //  ball2.physicsBody?.affectedByGravity = true
+//            
+//        }
     }
     
     
@@ -180,31 +178,48 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         /* Called before rendering each frame */
         
         // GUARD: if let lastTick != lastTick, the else block is executed
-        guard let lastTick = lastTick else {
-            // game is in a paused state == not reporting elapsed ticks
-            return
+//        guard let lastTick = lastTick else {
+//            // game is in a paused state == not reporting elapsed ticks
+//            return
+//        }
+//        
+//        let timePassed = lastTick.timeIntervalSinceNow * -1000.0 // *-1000 so the result is positive
+//        
+//        
+//        // checks if the time passed is bigger than the time period we established at the beginning
+//        if timePassed > tickLengthMillis {
+//            
+//            // if it is, we report a tick!
+//            self.lastTick = NSDate()
+//            tick?()
+//        }
+        
+        // Initialize _lastUpdateTime if it has not already been
+        if (self.lastUpdateTime == 0) {
+            self.lastUpdateTime = currentTime
         }
         
-        let timePassed = lastTick.timeIntervalSinceNow * -1000.0 // *-1000 so the result is positive
+        // Calculate time since last update
+        let dt = currentTime - self.lastUpdateTime
+        self.lastUpdateTime = currentTime
         
+        // Update the Spawn Timer
+        currentPolygonSpawnTime += dt
         
-        // checks if the time passed is bigger than the time period we established at the beginning
-        if timePassed > tickLengthMillis {
-            
-            // if it is, we report a tick!
-            self.lastTick = NSDate()
-            tick?()
+        if currentPolygonSpawnTime > polygonSpawnRate {
+            currentPolygonSpawnTime = 0
+            spawnPolygon()
         }
     }
-    
-    func startTicking() {
-        lastTick = NSDate()
-    }
-    
-    func stopTicking() {
-        lastTick = nil
-    }
-    
+//    
+//    func startTicking() {
+//        lastTick = NSDate()
+//    }
+//    
+//    func stopTicking() {
+//        lastTick = nil
+//    }
+//    
     
     // MARK: - block randomizer
     

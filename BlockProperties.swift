@@ -108,19 +108,19 @@ class BlockProperties: CustomStringConvertible {
         self.shape = shape
         
         if shape.spriteName == "rectangle" {
-            BlockCategory = 0x1 << 5
+            BlockCategory = 0x1 << 3
             
         }
         else if shape.spriteName == "oval" {
-            BlockCategory = 0x1 << 6
+            BlockCategory = 0x1 << 4
             
         }
         else if shape.spriteName == "square" {
-            BlockCategory = 0x1 << 7
+            BlockCategory = 0x1 << 5
             
         }
         else if shape.spriteName == "line" {
-            BlockCategory = 0x1 << 8
+            BlockCategory = 0x1 << 6
             
         }
         
