@@ -5,10 +5,14 @@ let PaddleCategoryName = "paddle"
 let GameMessageName = "gameMessage"
 let LeftCategoryName = "left"
 let RightCategoryName = "right"
+let BlockCategoryName = "block"
+let WorldCategoryName = "block"
 
-let BottomCategory : UInt32 = 0x1 << 0
-let PaddleCategory : UInt32 = 0x1 << 1
-let BorderCategory : UInt32 = 0x1 << 2
+let BottomCategory  : UInt32 = 0x1 << 0
+let PaddleCategory  : UInt32 = 0x1 << 1
+let BorderCategory  : UInt32 = 0x1 << 2
+let BlockCategory   : UInt32 = 0x1 << 3
+let WorldCategory   : UInt32 = 0x1 << 4
 
 
 private var currentPolygonSpawnTime : TimeInterval = 0
@@ -57,30 +61,31 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let bottomRect = CGRect(x: frame.origin.x, y: frame.origin.y, width: frame.size.width, height: 1)
         let bottom = SKNode()
         bottom.physicsBody = SKPhysicsBody(edgeLoopFrom: bottomRect)
+        
+        bottom.physicsBody?.categoryBitMask = BottomCategory
+        bottom.physicsBody?.contactTestBitMask = BlockCategory
+        
         addChild(bottom)
-
         
-        // removes gravity from the scene, applying a -2j force instead
-        physicsWorld.gravity = CGVector(dx: 0.0, dy: -2.0)
         
+        // removes gravity from the scene, applying a -1j force instead
+        physicsWorld.gravity = CGVector(dx: 0.0, dy: -1.0)
         physicsWorld.contactDelegate = self
 
-        //let block = childNode(withName: firstBlock.BlockCategoryName) as! SKSpriteNode
         let paddle = childNode(withName: PaddleCategoryName) as! SKSpriteNode
         
-        
-        bottom.physicsBody!.categoryBitMask = BottomCategory
-        //block.physicsBody!.categoryBitMask = firstBlock.BlockCategory
         paddle.physicsBody!.categoryBitMask = PaddleCategory
         borderBody.categoryBitMask = BorderCategory
         
-//        block.physicsBody!.contactTestBitMask = BottomCategory
-//        
-//        block.physicsBody!.contactTestBitMask = PaddleCategory
-//        
-//        block.physicsBody!.affectedByGravity = true
-//        block.alpha = 1
-
+        // buffer so that items aren’t deleted on screen
+        var worldFrame = frame
+        worldFrame.origin.x -= 100
+        worldFrame.origin.y -= 100
+        worldFrame.size.height += 200
+        worldFrame.size.width += 200
+        
+        self.physicsBody = SKPhysicsBody(edgeLoopFrom: worldFrame)
+        self.physicsBody?.categoryBitMask = WorldCategory
     }
 
     
@@ -145,18 +150,26 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func didBegin(_ contact: SKPhysicsContact) {
         
-        var firstBody: SKPhysicsBody
-        var secondBody: SKPhysicsBody
-
-        if contact.bodyA.categoryBitMask < contact.bodyB.categoryBitMask {
-            firstBody = contact.bodyA
-            secondBody = contact.bodyB
-        } else {
-            firstBody = contact.bodyB
-            secondBody = contact.bodyA
-        }
+//        var firstBody: SKPhysicsBody
+//        var secondBody: SKPhysicsBody
+//
+//        if contact.bodyA.categoryBitMask < contact.bodyB.categoryBitMask {
+//            firstBody = contact.bodyA
+//            secondBody = contact.bodyB
+//        } else {
+//            firstBody = contact.bodyB
+//            secondBody = contact.bodyA
+//        }
         
-        print("HAHHAHAHAHA")
+        print("COLLISION")
+        
+        if (contact.bodyA.categoryBitMask == BlockCategory) {
+            contact.bodyA.node?.physicsBody?.collisionBitMask = 0
+            contact.bodyA.node?.physicsBody?.categoryBitMask = 0
+        } else if (contact.bodyB.categoryBitMask == BlockCategory) {
+            contact.bodyB.node?.physicsBody?.collisionBitMask = 0
+            contact.bodyB.node?.physicsBody?.categoryBitMask = 0
+        }
 //        if firstBody.categoryBitMask == firstBlock.BlockCategory && secondBody.categoryBitMask == BottomCategory {
 //            print("Hit bottom. First contact has been made.")
 //        }
@@ -262,6 +275,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         block.physicsBody?.restitution = 0.2
         block.physicsBody?.mass = 0.0005
         block.physicsBody?.friction = 0.98
+        block.physicsBody?.categoryBitMask = BlockCategory
+        block.physicsBody?.contactTestBitMask = BottomCategory | WorldCategory
         
         
         addChild(block)

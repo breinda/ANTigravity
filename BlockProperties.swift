@@ -69,7 +69,7 @@ enum BlockShape: Int, CustomStringConvertible {
 
 class BlockProperties: CustomStringConvertible {
     
-    var BlockCategory : UInt32 = 0
+    //var BlockCategory : UInt32 = 0
     let BlockCategoryName : String
     //let BlockShape : Shape
     
@@ -107,22 +107,24 @@ class BlockProperties: CustomStringConvertible {
         self.color = color
         self.shape = shape
         
-        if shape.spriteName == "rectangle" {
-            BlockCategory = 0x1 << 3
-            
-        }
-        else if shape.spriteName == "oval" {
-            BlockCategory = 0x1 << 4
-            
-        }
-        else if shape.spriteName == "square" {
-            BlockCategory = 0x1 << 5
-            
-        }
-        else if shape.spriteName == "line" {
-            BlockCategory = 0x1 << 6
-            
-        }
+//        if shape.spriteName == "rectangle" {
+//            BlockCategory = 0x1 << 3
+//            
+//        }
+//        else if shape.spriteName == "oval" {
+//            BlockCategory = 0x1 << 4
+//            
+//        }
+//        else if shape.spriteName == "square" {
+//            BlockCategory = 0x1 << 5
+//            
+//        }
+//        else if shape.spriteName == "line" {
+//            BlockCategory = 0x1 << 6
+//            
+//        }
+        
+        //BlockCategory = 0x1 << 3
         
         BlockCategoryName = shape.spriteName
     }
