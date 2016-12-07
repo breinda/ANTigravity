@@ -62,7 +62,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
         
         // removes gravity from the scene, applying a -2j force instead
-        physicsWorld.gravity = CGVector(dx: 0.0, dy: -1.5)
+        physicsWorld.gravity = CGVector(dx: 0.0, dy: -2.0)
         
         physicsWorld.contactDelegate = self
 
