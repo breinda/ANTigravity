@@ -16,7 +16,7 @@ let WorldCategory   : UInt32 = 0x1 << 4
 
 
 private var currentPolygonSpawnTime : TimeInterval = 0
-private var polygonSpawnRate        : TimeInterval = 2.0
+private var polygonSpawnRate        : TimeInterval = 3.0
 private let random = GKARC4RandomSource()
 
 
@@ -64,12 +64,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         bottom.physicsBody?.categoryBitMask = BottomCategory
         bottom.physicsBody?.contactTestBitMask = BlockCategory
+        bottom.alpha = 0
         
         addChild(bottom)
         
         
         // removes gravity from the scene, applying a -1j force instead
-        physicsWorld.gravity = CGVector(dx: 0.0, dy: -1.0)
+        physicsWorld.gravity = CGVector(dx: 0.0, dy: -0.5)
         physicsWorld.contactDelegate = self
 
         let paddle = childNode(withName: PaddleCategoryName) as! SKSpriteNode
@@ -153,33 +154,62 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         print("COLLISION")
         
         if (contact.bodyA.categoryBitMask == BlockCategory) {
-            contact.bodyA.node?.physicsBody?.collisionBitMask = 0
-            contact.bodyA.node?.physicsBody?.categoryBitMask = 0
+//            contact.bodyA.node?.physicsBody?.collisionBitMask = 0
+//            contact.bodyA.node?.physicsBody?.categoryBitMask = 0
+            
         } else if (contact.bodyB.categoryBitMask == BlockCategory) {
+//            contact.bodyB.node?.physicsBody?.collisionBitMask = 0
+//            contact.bodyB.node?.physicsBody?.categoryBitMask = 0
+        }
+        
+        if contact.bodyA.categoryBitMask == BottomCategory {
+            
             contact.bodyB.node?.physicsBody?.collisionBitMask = 0
             contact.bodyB.node?.physicsBody?.categoryBitMask = 0
+            
+            
+            let alertView = UIAlertController(title: "BOO!",
+                                              message: "you lost :(" as String, preferredStyle:.actionSheet)
+            let okAction = UIAlertAction(title: "START OVER!", style: .default, handler: nil)
+            alertView.addAction(okAction)
+            self.view?.window?.rootViewController?.present(alertView, animated: true, completion: nil)
+            
+            game.IsOver = true
+            self.view?.window?.rootViewController?.viewDidLoad()
+            
+        } else if contact.bodyB.categoryBitMask == BottomCategory {
+            
+            contact.bodyA.node?.physicsBody?.collisionBitMask = 0
+            contact.bodyA.node?.physicsBody?.categoryBitMask = 0
+            
+            let alertView = UIAlertController(title: "BOO!",
+                                              message: "you lost :(" as String, preferredStyle:.actionSheet)
+            let okAction = UIAlertAction(title: "START OVER!", style: .default, handler: nil)
+            alertView.addAction(okAction)
+            self.view?.window?.rootViewController?.present(alertView, animated: true, completion: nil)
+            
+            game.IsOver = true
+            self.view?.window?.rootViewController?.viewDidLoad()
         }
+        
         
         // remove nodes after they hit the floor
         if contact.bodyA.categoryBitMask == WorldCategory {
             contact.bodyB.node?.removeFromParent()
             contact.bodyB.node?.physicsBody = nil
             contact.bodyB.node?.removeAllActions()
+            
+            print("EU HEIN")
         } else if contact.bodyB.categoryBitMask == WorldCategory {
             contact.bodyA.node?.removeFromParent()
             contact.bodyA.node?.physicsBody = nil
             contact.bodyA.node?.removeAllActions()
+            
+            print("EU HEIN")
         }
         
         
-        let alertView = UIAlertController(title: "BOO!",
-                                          message: "you lost :(" as String, preferredStyle:.actionSheet)
-        let okAction = UIAlertAction(title: "START OVER!", style: .default, handler: nil)
-        alertView.addAction(okAction)
-        self.view?.window?.rootViewController?.present(alertView, animated: true, completion: nil)
         
-        game.IsOver = true
-        self.view?.window?.rootViewController?.viewDidLoad()
         
     }
     
@@ -248,7 +278,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         block.physicsBody?.restitution = 0.2
         block.physicsBody?.mass = 0.0005
-        block.physicsBody?.friction = 0.98
+        block.physicsBody?.friction = 0.99
         block.physicsBody?.categoryBitMask = BlockCategory
         block.physicsBody?.contactTestBitMask = BottomCategory | WorldCategory
         
