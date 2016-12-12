@@ -27,8 +27,6 @@ let TickLengthLevelOne = TimeInterval(600) // ms
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
-    
-    
     // textures used on blocks
     let ovalTexture = SKTexture(imageNamed: "Oval")
     let squareTexture = SKTexture(imageNamed: "Square")
@@ -54,6 +52,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     override func didMove(to view: SKView) {
         super.didMove(to: view)
+        
+        self.view?.isPaused = false
         
         let borderBody = SKPhysicsBody(edgeLoopFrom: self.frame)
         borderBody.friction = 0
@@ -181,26 +181,34 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             let alertView = UIAlertController(title: "BOO!",
                                               message: "you lost :(" as String, preferredStyle:.actionSheet)
-            let okAction = UIAlertAction(title: "START OVER!", style: .default, handler: nil)
+            let okAction = UIAlertAction(title: "START OVER!", style: .default, handler: {(alert: UIAlertAction!) in
+                game.IsOver = true
+                self.view?.window?.rootViewController?.viewDidLoad()
+            })
+            
             alertView.addAction(okAction)
-            self.view?.window?.rootViewController?.present(alertView, animated: true, completion: nil)
-            
-            game.IsOver = true
-            self.view?.window?.rootViewController?.viewDidLoad()
-            
-        } else if contact.bodyB.categoryBitMask == BottomCategory {
+            self.view?.window?.rootViewController?.present(alertView, animated: true, completion: {
+                self.view?.isPaused = true
+            })
+        }
+        
+        else if contact.bodyB.categoryBitMask == BottomCategory {
             
             contact.bodyA.node?.physicsBody?.collisionBitMask = 0
             contact.bodyA.node?.physicsBody?.categoryBitMask = 0
             
+
             let alertView = UIAlertController(title: "BOO!",
                                               message: "you lost :(" as String, preferredStyle:.actionSheet)
-            let okAction = UIAlertAction(title: "START OVER!", style: .default, handler: nil)
-            alertView.addAction(okAction)
-            self.view?.window?.rootViewController?.present(alertView, animated: true, completion: nil)
+            let okAction = UIAlertAction(title: "START OVER!", style: .default, handler: {(alert: UIAlertAction!) in
+                game.IsOver = true
+                self.view?.window?.rootViewController?.viewDidLoad()
+            })
             
-            game.IsOver = true
-            self.view?.window?.rootViewController?.viewDidLoad()
+            alertView.addAction(okAction)
+            self.view?.window?.rootViewController?.present(alertView, animated: true, completion: {
+                self.view?.isPaused = true
+            })
         }
         
         
@@ -218,10 +226,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             print("EU HEIN")
         }
-        
-        
-        
-        
     }
     
     
