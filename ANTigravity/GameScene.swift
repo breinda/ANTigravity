@@ -63,6 +63,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let bottomRect = CGRect(x: frame.origin.x, y: frame.origin.y, width: frame.size.width, height: 1)
         let bottom = SKNode()
         bottom.physicsBody = SKPhysicsBody(edgeLoopFrom: bottomRect)
+        bottom.physicsBody?.friction = 0
+        bottom.physicsBody?.mass = 1e6
         
         bottom.physicsBody?.categoryBitMask = BottomCategory
         bottom.physicsBody?.contactTestBitMask = BlockCategory
@@ -71,7 +73,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         addChild(bottom)
         
         
-        // removes gravity from the scene, applying a -1j force instead
+        // removes regular gravity from the scene, applying a -0.5j force instead
         physicsWorld.gravity = CGVector(dx: 0.0, dy: -0.5)
         physicsWorld.contactDelegate = self
 
@@ -119,16 +121,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
         if isFingerOnRight {
             let paddle = childNode(withName: "paddle") as! SKSpriteNode
+            //paddle.physicsBody!.velocity = CGVector(dx: 120, dy: 0)
             paddle.physicsBody!.velocity = CGVector(dx: 0, dy: 0)
-            paddle.physicsBody!.applyImpulse(CGVector(dx: 7, dy: 0))
+            paddle.physicsBody!.applyImpulse(CGVector(dx: 12000, dy: 0))
             
             paddle.texture = SKTexture(imageNamed: "antLogInv")
             print("RIGHT!!!!")
         }
         if isFingerOnLeft {
             let paddle = childNode(withName: "paddle") as! SKSpriteNode
+            //paddle.physicsBody!.velocity = CGVector(dx: -120, dy: 0)
             paddle.physicsBody!.velocity = CGVector(dx: 0, dy: 0)
-            paddle.physicsBody!.applyImpulse(CGVector(dx: -7, dy: 0))
+            paddle.physicsBody!.applyImpulse(CGVector(dx: -12000, dy: 0))
             
             paddle.texture = SKTexture(imageNamed: "antLog")
             print("LEFT!!!!!!")
@@ -282,10 +286,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         block.position = CGPoint(x: randomPosition, y: size.height)
-        
-        block.physicsBody?.restitution = 0.2
-        block.physicsBody?.mass = 0.0005
-        block.physicsBody?.friction = 0.99
+        block.zPosition = 3
+        block.physicsBody?.restitution = 0.1
+        block.physicsBody?.mass = 50
+        block.physicsBody?.friction = 1
+        block.physicsBody?.angularDamping = 0.9
+        block.physicsBody?.linearDamping = 0
+
         block.physicsBody?.categoryBitMask = BlockCategory
         block.physicsBody?.contactTestBitMask = BottomCategory | WorldCategory
         
