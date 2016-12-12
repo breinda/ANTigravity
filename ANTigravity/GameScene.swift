@@ -27,6 +27,8 @@ let TickLengthLevelOne = TimeInterval(600) // ms
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
+    
+    
     // textures used on blocks
     let ovalTexture = SKTexture(imageNamed: "Oval")
     let squareTexture = SKTexture(imageNamed: "Square")
@@ -75,6 +77,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
         let paddle = childNode(withName: PaddleCategoryName) as! SKSpriteNode
         
+        paddle.texture = SKTexture(imageNamed: "antLog")
         paddle.physicsBody!.categoryBitMask = PaddleCategory
         borderBody.categoryBitMask = BorderCategory
         
@@ -118,12 +121,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             let paddle = childNode(withName: "paddle") as! SKSpriteNode
             paddle.physicsBody!.velocity = CGVector(dx: 0, dy: 0)
             paddle.physicsBody!.applyImpulse(CGVector(dx: 7, dy: 0))
+            
+            paddle.texture = SKTexture(imageNamed: "antLogInv")
             print("RIGHT!!!!")
         }
         if isFingerOnLeft {
             let paddle = childNode(withName: "paddle") as! SKSpriteNode
             paddle.physicsBody!.velocity = CGVector(dx: 0, dy: 0)
             paddle.physicsBody!.applyImpulse(CGVector(dx: -7, dy: 0))
+            
+            paddle.texture = SKTexture(imageNamed: "antLog")
             print("LEFT!!!!!!")
         }
     }
