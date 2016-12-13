@@ -27,6 +27,11 @@ let TickLengthLevelOne = TimeInterval(600) // ms
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
+    //let scale: CGFloat = 2.0
+    //let damping: CGFloat = 0.98
+    
+    //var point: CGPoint?
+    
     // textures used on blocks
     let ovalTexture = SKTexture(imageNamed: "Oval")
     let squareTexture = SKTexture(imageNamed: "Square")
@@ -43,6 +48,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var isFingerOnRight = false
     
     //var firstBlock : BlockProperties = BlockProperties(color: BlockColor.random(), shape: BlockShape.random())
+    
+    //let paddle = childNode(withName: PaddleCategoryName) as! SKSpriteNode
     
     private var lastUpdateTime : TimeInterval = 0
     
@@ -80,6 +87,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let paddle = childNode(withName: PaddleCategoryName) as! SKSpriteNode
         
         paddle.texture = SKTexture(imageNamed: "antLog")
+        
+        paddle.zPosition = 3
+        paddle.physicsBody?.affectedByGravity = true
+        paddle.physicsBody?.restitution = 0.1
+        paddle.physicsBody?.mass = 100
+        paddle.physicsBody?.friction = 0.99
+        paddle.physicsBody?.angularDamping = 1
+        paddle.physicsBody?.linearDamping = 0
+        
         paddle.physicsBody!.categoryBitMask = PaddleCategory
         borderBody.categoryBitMask = BorderCategory
         
@@ -101,8 +117,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let touch = touches.first
         let touchLocation = touch!.location(in: self)
         
+        //point = touchLocation
+        
         // TESTING THE WATERS
         //spawnPolygon()
+        
         
         if let body = physicsWorld.body(at: touchLocation) {
             //print(body.node!.name)
@@ -122,8 +141,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if isFingerOnRight {
             let paddle = childNode(withName: "paddle") as! SKSpriteNode
             //paddle.physicsBody!.velocity = CGVector(dx: 120, dy: 0)
-            paddle.physicsBody!.velocity = CGVector(dx: 0, dy: 0)
-            paddle.physicsBody!.applyImpulse(CGVector(dx: 12000, dy: 0))
+            //paddle.physicsBody!.velocity = CGVector(dx: 0, dy: 0)
+            //paddle.physicsBody!.applyImpulse(CGVector(dx: 12000, dy: 0))
+            paddle.physicsBody?.applyForce(CGVector(dx: 600000, dy: 0))
             
             paddle.texture = SKTexture(imageNamed: "antLogInv")
             print("RIGHT!!!!")
@@ -131,8 +151,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if isFingerOnLeft {
             let paddle = childNode(withName: "paddle") as! SKSpriteNode
             //paddle.physicsBody!.velocity = CGVector(dx: -120, dy: 0)
-            paddle.physicsBody!.velocity = CGVector(dx: 0, dy: 0)
-            paddle.physicsBody!.applyImpulse(CGVector(dx: -12000, dy: 0))
+            //paddle.physicsBody!.velocity = CGVector(dx: 0, dy: 0)
+            //paddle.physicsBody!.applyImpulse(CGVector(dx: -12000, dy: 0))
+            paddle.physicsBody?.applyForce(CGVector(dx: -600000, dy: 0))
             
             paddle.texture = SKTexture(imageNamed: "antLog")
             print("LEFT!!!!!!")
@@ -150,13 +171,29 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 //            paddle.physicsBody!.applyImpulse(CGVector(dx: -2, dy: 0))
 //            print("LEFT!!!!!!")
 //        }
+        
+        /*let touch = touches.first
+        let touchLocation = touch!.location(in: self)
+        
+        point = touchLocation*/
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         isFingerOnRight = false
         isFingerOnLeft = false
+        
+        let paddle = childNode(withName: "paddle") as! SKSpriteNode
+        paddle.physicsBody!.velocity = CGVector(dx: 0, dy: 0)
+        
+        
+        //point = nil
     }
     
+    /*func moveNodeToPoint(sprite:SKSpriteNode, point:CGPoint) {
+        let dx: CGFloat = (point.x - sprite.position.x) * scale
+        //let dy: CGFloat = (point.y - sprite.position.y) * scale
+        sprite.physicsBody?.velocity = CGVector(dx: dx, dy: 0)
+    }*/
     
     // MARK: - collision handler
     
@@ -172,6 +209,36 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 //            contact.bodyB.node?.physicsBody?.collisionBitMask = 0
 //            contact.bodyB.node?.physicsBody?.categoryBitMask = 0
         }
+        
+        /*if (contact.bodyA.categoryBitMask == PaddleCategory) {
+            if (contact.bodyB.categoryBitMask == BlockCategory) {
+                print("BOO")
+                
+                let blockFriction = contact.bodyB.node?.physicsBody?.friction
+                
+                if isFingerOnRight {
+                    contact.bodyB.node?.physicsBody?.applyImpulse(CGVector(dx: 12000 * blockFriction!, dy: 0))
+                }
+                if isFingerOnLeft {
+                    contact.bodyB.node?.physicsBody?.applyImpulse(CGVector(dx: 12000 * blockFriction!, dy: 0))
+                }
+                
+            }
+            
+        } else if (contact.bodyB.categoryBitMask == PaddleCategory) {
+            if (contact.bodyA.categoryBitMask == BlockCategory) {
+                print("BOO")
+                
+                let blockFriction = contact.bodyA.node?.physicsBody?.friction
+                
+                if isFingerOnRight {
+                    contact.bodyA.node?.physicsBody?.applyImpulse(CGVector(dx: 12000 * blockFriction!, dy: 0))
+                }
+                if isFingerOnLeft {
+                    contact.bodyA.node?.physicsBody?.applyImpulse(CGVector(dx: 12000 * blockFriction!, dy: 0))
+                }
+            }
+        }*/
         
         if contact.bodyA.categoryBitMask == BottomCategory {
             
@@ -228,6 +295,39 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    /*func didEnd(_ contact: SKPhysicsContact) {
+        if (contact.bodyA.categoryBitMask == PaddleCategory) {
+            if (contact.bodyB.categoryBitMask == BlockCategory) {
+                print("WAAAH")
+                
+                let blockFriction = contact.bodyB.node?.physicsBody?.friction
+                
+                if isFingerOnRight {
+                    contact.bodyB.node?.physicsBody?.applyImpulse(CGVector(dx: 12000 * blockFriction!, dy: 0))
+                }
+                if isFingerOnLeft {
+                    contact.bodyB.node?.physicsBody?.applyImpulse(CGVector(dx: 12000 * blockFriction!, dy: 0))
+                }
+                
+            }
+            
+        } else if (contact.bodyB.categoryBitMask == PaddleCategory) {
+            if (contact.bodyA.categoryBitMask == BlockCategory) {
+                print("WAAAH")
+                
+                let blockFriction = contact.bodyA.node?.physicsBody?.friction
+                
+                if isFingerOnRight {
+                    contact.bodyA.node?.physicsBody?.applyImpulse(CGVector(dx: 12000 * blockFriction!, dy: 0))
+                }
+                if isFingerOnLeft {
+                    contact.bodyA.node?.physicsBody?.applyImpulse(CGVector(dx: 12000 * blockFriction!, dy: 0))
+                }
+            }
+        }
+
+    }*/
+    
     
     // MARK: - handling time
     
@@ -250,6 +350,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             currentPolygonSpawnTime = 0
             spawnPolygon()
         }
+        
+        /////////////////////////////
+        
+        /*let paddle = childNode(withName: "paddle") as! SKSpriteNode
+        
+        if (point != nil) {
+            moveNodeToPoint(sprite: paddle, point: point!)
+        }
+        else {
+            // This will slow the circle over time when after the touch ends
+            let dx = paddle.physicsBody!.velocity.dx * damping
+            //let dy = paddle.physicsBody!.velocity.dy * damping
+            paddle.physicsBody!.velocity = CGVector(dx: dx, dy: 0)
+        }*/
     }
 
     
@@ -293,12 +407,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         block.zPosition = 3
         block.physicsBody?.restitution = 0.1
         block.physicsBody?.mass = 50
-        block.physicsBody?.friction = 1
-        block.physicsBody?.angularDamping = 0.9
+        block.physicsBody?.friction = 0.9
+        block.physicsBody?.angularDamping = 1
         block.physicsBody?.linearDamping = 0
 
         block.physicsBody?.categoryBitMask = BlockCategory
-        block.physicsBody?.contactTestBitMask = BottomCategory | WorldCategory
+        block.physicsBody?.contactTestBitMask = BottomCategory | WorldCategory | PaddleCategory
         
         block.alpha = 1
         
