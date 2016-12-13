@@ -15,6 +15,14 @@ let BlockCategory   : UInt32 = 0x1 << 3
 let WorldCategory   : UInt32 = 0x1 << 4
 
 
+var blockNodeArray          : [SKSpriteNode] = [SKSpriteNode]()
+var blockPropertiesArray    : [BlockProperties] = [BlockProperties]()
+// amount of blocks that will fall at the current game level
+
+var numberOfBlocksTotal     : Int = 2
+var numberOfBlocksRemaining : Int = numberOfBlocksTotal
+
+
 private var currentPolygonSpawnTime : TimeInterval = 0
 private var polygonSpawnRate        : TimeInterval = 3.0
 private let random = GKARC4RandomSource()
@@ -59,6 +67,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         super.didMove(to: view)
         
         self.view?.isPaused = false
+        
+        blockPropertiesArray.removeAll()
+        blockNodeArray.removeAll()
+        populateBlockArray(numberOfBlocks: numberOfBlocksTotal)
         
         let borderBody = SKPhysicsBody(edgeLoopFrom: self.frame)
         borderBody.friction = 0
@@ -234,6 +246,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             alertView.addAction(okAction)
             self.view?.window?.rootViewController?.present(alertView, animated: true, completion: {
+                numberOfBlocksRemaining = numberOfBlocksTotal
                 self.view?.isPaused = true
             })
         }
@@ -253,6 +266,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             alertView.addAction(okAction)
             self.view?.window?.rootViewController?.present(alertView, animated: true, completion: {
+                numberOfBlocksRemaining = numberOfBlocksTotal
                 self.view?.isPaused = true
             })
         }
@@ -293,8 +307,26 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         currentPolygonSpawnTime += dt
         
         if currentPolygonSpawnTime > polygonSpawnRate {
-            currentPolygonSpawnTime = 0
-            spawnPolygon()
+            if (numberOfBlocksRemaining > 0) {
+                currentPolygonSpawnTime = 0
+                spawnPolygon()
+            }
+            
+            else {
+                let alertView = UIAlertController(title: "CONGRATULATIONS!!",
+                                                  message: "you won! :D" as String, preferredStyle:.actionSheet)
+                let okAction = UIAlertAction(title: "GO FORWARD!", style: .default, handler: {(alert: UIAlertAction!) in
+                    game.IsOver = true
+                    self.view?.window?.rootViewController?.viewDidLoad()
+                })
+                
+                alertView.addAction(okAction)
+                self.view?.window?.rootViewController?.present(alertView, animated: true, completion: {
+                    numberOfBlocksTotal += 1
+                    numberOfBlocksRemaining = numberOfBlocksTotal
+                    self.view?.isPaused = true
+                })
+            }
         }
         
         /////////////////////////////
@@ -313,57 +345,77 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
 
     
+    // MARK: - Block Array handler
+    
+    func populateBlockArray(numberOfBlocks: Int) {
+        
+        var i = 0
+        
+        while (i < numberOfBlocks) {
+            let blockProperties: BlockProperties = BlockProperties(color: BlockColor.random(), shape: BlockShape.random())
+            
+            var block: SKSpriteNode
+            
+            if blockProperties.shape.spriteName == "rectangle" {
+                block = SKSpriteNode(texture: squareTexture, size: CGSize(width: 100, height: 29))
+                block.physicsBody = SKPhysicsBody(texture: squareTexture, size: block.size)
+            }
+            else if blockProperties.shape.spriteName == "oval" {
+                block = SKSpriteNode(texture: ovalTexture, size: CGSize(width: 29, height: 29))
+                block.physicsBody = SKPhysicsBody(texture: ovalTexture, size: block.size)
+            }
+            else if blockProperties.shape.spriteName == "square" {
+                block = SKSpriteNode(texture: squareTexture, size: CGSize(width: 29, height: 29))
+                block.physicsBody = SKPhysicsBody(texture: squareTexture, size: block.size)
+            }
+            else if blockProperties.shape.spriteName == "line" {
+                block = SKSpriteNode(texture: squareTexture, size: CGSize(width: 70, height: 5))
+                block.physicsBody = SKPhysicsBody(texture: squareTexture, size: block.size)
+            }
+            else {
+                print("ALGO ERRADO COM O TIPO DO BLOCO")
+                exit(2)
+            }
+            
+            
+            // randomise block position @ the top of the screen
+            var randomPosition = abs(CGFloat(random.nextInt()).truncatingRemainder(dividingBy: size.width))
+            
+            // 100 é a largura do botao que move a plataforma + a arvore
+            while (randomPosition - block.size.width / 2) < 100 || (randomPosition + block.size.width / 2) > UIScreen.main.bounds.width - 100 {
+                randomPosition = abs(CGFloat(random.nextInt()).truncatingRemainder(dividingBy: size.width))
+            }
+            
+            block.position = CGPoint(x: randomPosition, y: size.height)
+            block.zPosition = 3
+            block.physicsBody?.restitution = 0.1
+            block.physicsBody?.mass = 50
+            block.physicsBody?.friction = 0.9
+            block.physicsBody?.angularDamping = 1
+            block.physicsBody?.linearDamping = 0
+            
+            block.physicsBody?.categoryBitMask = BlockCategory
+            block.physicsBody?.contactTestBitMask = BottomCategory | WorldCategory | PaddleCategory
+            
+            block.alpha = 1
+            
+            blockNodeArray.append(block)
+            //print(blockNodeArray.last)
+            blockPropertiesArray.append(blockProperties)
+            print(blockPropertiesArray.last?.BlockCategoryName)
+            
+            i += 1
+        }
+    }
+    
+    
     // MARK: - block randomizer
     
     func spawnPolygon() {
         
-        let blockProperties: BlockProperties = BlockProperties(color: BlockColor.random(), shape: BlockShape.random())
+        addChild(blockNodeArray[numberOfBlocksRemaining - 1])
         
-        var block: SKSpriteNode
-        
-        if blockProperties.shape.spriteName == "rectangle" {
-            block = SKSpriteNode(texture: squareTexture, size: CGSize(width: 100, height: 29))
-            block.physicsBody = SKPhysicsBody(texture: squareTexture, size: block.size)
-        }
-        else if blockProperties.shape.spriteName == "oval" {
-            block = SKSpriteNode(texture: ovalTexture, size: CGSize(width: 29, height: 29))
-            block.physicsBody = SKPhysicsBody(texture: ovalTexture, size: block.size)
-        }
-        else if blockProperties.shape.spriteName == "square" {
-            block = SKSpriteNode(texture: squareTexture, size: CGSize(width: 29, height: 29))
-            block.physicsBody = SKPhysicsBody(texture: squareTexture, size: block.size)
-        }
-        else if blockProperties.shape.spriteName == "line" {
-            block = SKSpriteNode(texture: squareTexture, size: CGSize(width: 70, height: 5))
-            block.physicsBody = SKPhysicsBody(texture: squareTexture, size: block.size)
-        }
-        else {
-            print("ALGO ERRADO COM O TIPO DO BLOCO")
-            exit(2)
-        }
-        
-        var randomPosition = abs(CGFloat(random.nextInt()).truncatingRemainder(dividingBy: size.width))
-        
-        // 80 é a largura do botao que move a plataforma
-        while (randomPosition - block.size.width / 2) < 80 || (randomPosition + block.size.width / 2) > UIScreen.main.bounds.width - 80 {
-            randomPosition = abs(CGFloat(random.nextInt()).truncatingRemainder(dividingBy: size.width))
-        }
-        
-        block.position = CGPoint(x: randomPosition, y: size.height)
-        block.zPosition = 3
-        block.physicsBody?.restitution = 0.1
-        block.physicsBody?.mass = 50
-        block.physicsBody?.friction = 0.9
-        block.physicsBody?.angularDamping = 1
-        block.physicsBody?.linearDamping = 0
+        numberOfBlocksRemaining -= 1
 
-        block.physicsBody?.categoryBitMask = BlockCategory
-        block.physicsBody?.contactTestBitMask = BottomCategory | WorldCategory | PaddleCategory
-        
-        block.alpha = 1
-        
-        addChild(block)
-        
-        block.alpha = 1
     }
 }
