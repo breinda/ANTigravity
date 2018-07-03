@@ -131,7 +131,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let tree = childNode(withName: "tree") as! SKSpriteNode
         var currentLevel = tree.childNode(withName: "currentLevel") as! SKLabelNode
         
-        print("UHULLLLLL \(currentLevel.text)")
+        print("UHULLLLLL \(String(describing: currentLevel.text))")
         
         currentLevel.text = String(currentLevelInt)
         
@@ -139,7 +139,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let treeInv = childNode(withName: "treeInv") as! SKSpriteNode
         var remainingBlocks = treeInv.childNode(withName: "remainingBlocks") as! SKLabelNode
         
-        print("UHULLLLLL \(remainingBlocks.text)")
+        print("UHULLLLLL \(String(describing: remainingBlocks.text))")
         
         remainingBlocks.text = String(numberOfBlocksRemaining)
     }
@@ -275,7 +275,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 let treeInv = self.childNode(withName: "treeInv") as! SKSpriteNode
                 var remainingBlocks = treeInv.childNode(withName: "remainingBlocks") as! SKLabelNode
                 
-                print("UHULLLLLL \(remainingBlocks.text)")
+                print("UHULLLLLL \(String(describing: remainingBlocks.text))")
                 
                 remainingBlocks.text = String(numberOfBlocksRemaining)
                 
@@ -303,7 +303,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 let treeInv = self.childNode(withName: "treeInv") as! SKSpriteNode
                 var remainingBlocks = treeInv.childNode(withName: "remainingBlocks") as! SKLabelNode
                 
-                print("UHULLLLLL \(remainingBlocks.text)")
+                print("UHULLLLLL \(String(describing: remainingBlocks.text))")
                 
                 remainingBlocks.text = String(numberOfBlocksRemaining)
                 
@@ -368,7 +368,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     let treeInv = self.childNode(withName: "treeInv") as! SKSpriteNode
                     var remainingBlocks = treeInv.childNode(withName: "remainingBlocks") as! SKLabelNode
                     
-                    print("UHULLLLLL \(remainingBlocks.text)")
+                    print("UHULLLLLL \(String(describing: remainingBlocks.text))")
                     
                     remainingBlocks.text = String(numberOfBlocksTotal)
                     
@@ -451,7 +451,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             blockNodeArray.append(block)
             //print(blockNodeArray.last)
             blockPropertiesArray.append(blockProperties)
-            print(blockPropertiesArray.last?.BlockCategoryName)
+            print(blockPropertiesArray.last?.BlockCategoryName as Any)
             
             i += 1
         }
@@ -469,7 +469,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let treeInv = childNode(withName: "treeInv") as! SKSpriteNode
         var remainingBlocks = treeInv.childNode(withName: "remainingBlocks") as! SKLabelNode
         
-        print("UHULLLLLL \(remainingBlocks.text)")
+        print("UHULLLLLL \(String(describing: remainingBlocks.text))")
         
         remainingBlocks.text = String(numberOfBlocksRemaining)
 
