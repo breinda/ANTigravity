@@ -439,7 +439,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             block.zPosition = 3
             block.physicsBody?.restitution = 0.1
             block.physicsBody?.mass = 50
-            block.physicsBody?.friction = 0.9
+            block.physicsBody?.friction = 1
             block.physicsBody?.angularDamping = 1
             block.physicsBody?.linearDamping = 0
             
